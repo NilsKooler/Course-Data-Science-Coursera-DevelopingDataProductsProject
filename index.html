@@ -1,0 +1,44 @@
+<h1 id="reproduduciblepitchpresentationprojectassignment">Reproduducible Pitch Presentation Project Assignment</h1>
+
+<p>date: 21 Jun 2015</p>
+
+<h1 id="stormeventsanalysiswithvariablewheathereventsslidershinyapp">Storm Events Analysis with variable Wheather Events slider Shiny APP</h1>
+
+<p>The code for this <b>shiny application</b> is based on the PeerAssment for Courseras Reproducible Research.
+One of the questions needed to be answered is The following question:Across the United States, which types of wheather events are most harmful with respect to population health?<br>
+When analysing data it could be useful to see what impact it has to include a different number of wheather events in the analysis<br>
+For this purpose a <b>shiny application</b> is written to make the number of wheater events a variable.Please note that the code included in this presentation is redundant. Not every shiny code detail is explained.
+Please see github repository for shiny app ui.R and server.R code</p>
+
+<h1 id="slidewithstormdatacode1">Slide With Stormdata Code 1</h1>
+
+<pre><code class="r language-r">library(R.utils); library(ggplot2);library(plyr);library(gridExtra); require(gridExtra)
+#Use reduced data for testing purposes instead original (143 MB) 
+stormData &lt;- read.csv("repdata-data-StormData-reduced.csv", sep = ",")
+#data filter to reduce data 
+fieldFilter &lt;- function(field, data, topNbOfWheatherTypes) {
+  index &lt;- which(colnames(data) == field)
+  aggregate &lt;- aggregate(data[, index], by = list(data$EVTYPE), FUN = "sum")
+  names(aggregate) &lt;- c("EVTYPE", field)
+  aggregate &lt;- arrange(aggregate, aggregate[, 2], decreasing = T)
+  aggregate &lt;- head(aggregate, n = topNbOfWheatherTypes)
+  return(within(aggregate, EVTYPE &lt;- factor(x = EVTYPE, levels = aggregate$EVTYPE)))
+ } 
+</code></pre>
+
+<h1 id="slidewithstormdatacode2">Slide With Stormdata Code 2</h1>
+
+<pre><code class="r language-r">#number of events, this is made variable in the shiny application by using
+# slider input from ui.R and using
+# events &lt;- input$events 
+#For reproducible presentation purposes the number is fixed to 25 so that a Slide can be plotted.
+#For this prentation assume event=20 
+events&lt;-20  
+#create fatalities and injuries data for top 20 storm data Events and print the diagram
+fatalities &lt;- fieldFilter("FATALITIES", stormData, events)
+injuries &lt;- fieldFilter("INJURIES", stormData, events)  
+</code></pre>
+
+<h1 id="slidewithplot">Slide With Plot</h1>
+
+<p><img src="PitchPresentation-figure/unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" /> </p>
